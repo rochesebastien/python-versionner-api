@@ -18,14 +18,14 @@ app = FastAPI(
 import requests
 from bs4 import BeautifulSoup
 
-
-
+from app.data.scrappers.VersionnerScrapper import VersionnerScrapper
+from app.controllers.versions import Versions
 
 @app.get("/")
 def read_root():
     return {"Python Versionner API": "Running"}
 
-    
+
 @app.get("/api/status",
     tags=["Status"],
     summary="Get the status of the API",
@@ -43,21 +43,9 @@ def python_version_scrapper():
     url = "https://www.python.org/downloads/"
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
-    version_list = soup.find_all('div', class_='download-list-widget')[0].find_all('li')
-    versions = []
-    print(type(version_list))
-    for v in version_list:
-        release_number = v.find('span', class_='release-number').text.strip()
-        release_date = v.find('span', class_='release-date').text.strip()
-        download_link = v.find('span', class_='release-download').find('a')['href']
-
-        version_dict = {
-            'version': release_number,
-            'release_date': release_date,
-            'download_link': f"https://www.python.org/downloads/{download_link}"
-        }
-
-        versions.append(version_dict)
     
-    return versions
 
+@app.get("/python/version/test")
+def python_version_scrapper():
+    test = Versions()
+    return test.getAllVersions()
