@@ -2,6 +2,7 @@ from typing import Union
 from fastapi import FastAPI
 
 from app.data.scrappers.VersionnerScrapper import VersionnerScrapper
+from app.data.scrappers.ImageScrapper import ImageScrapper
 
 metadata = {
     "title": "Python Versionner API",
@@ -38,7 +39,16 @@ def status():
 def python_all_version_scrapper():
     scrapper = VersionnerScrapper()
     return scrapper.scrap_all_version()
-    
+
+@app.get("/python/version/{version}",
+    tags=["Python Versions"],
+    summary="Get python version matching the version gvien as parameter",
+    description="Get python version matching the version gvien as parameter")
+def python_all_specific_version(version: Union[str, None] = None):
+    scrapper = VersionnerScrapper()
+    python_version = scrapper.scrap_all_version()
+    filtered_versions = list(filter(lambda v: v['version'] == version, python_version))
+    return filtered_versions
 
 @app.get("/python/version/active",
     tags=["Python Versions"],
@@ -48,7 +58,9 @@ def python_active_version_scrapper():
     scrapper = VersionnerScrapper()
     return scrapper.scrap_active_version()
 
-@app.get("/python/images/{version}")
-def python_images_version_scrapper(version: Union[str, None] = None):
-    scrapper = VersionnerScrapper()
-    return scrapper.scrap_images_version(version)
+
+
+# @app.get("/python/images/{version}")
+# def python_images_scrapper(version: Union[str, None] = None):
+#     scrapper = ImageScrapper()
+#     return scrapper.scrap_specific_python_version(version)
